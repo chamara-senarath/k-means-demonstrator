@@ -1,6 +1,6 @@
 # k-means-demonstrator
 
-this is an application written in C# to demonstrate K-Means clustering algorithm.
+This is an application written in C# to demonstrate K-Means clustering algorithm.
 cordinates can be given as a text file or by clicking on the panel.
 text file should be contained cordinates as follows,
 ```
@@ -10,4 +10,4 @@ text file should be contained cordinates as follows,
 
 ```
 
-Cordinates should be between the range of *800( x cordinate ), 600 ( y cordinate )*
+Cordinates should be between the range of **800( x cordinate ), 600 ( y cordinate )**
