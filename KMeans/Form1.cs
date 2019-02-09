@@ -15,6 +15,23 @@ namespace KMeans
         List<int[]> dataPoints = new List<int[]>();
         List<int[]> centroidList = new List<int[]>();
         List<int> clusters = new List<int>();
+        List<Color> colors = new List<Color>()
+        {
+            Color.Blue,
+            Color.Cyan,
+            Color.PaleVioletRed,
+            Color.MediumVioletRed,
+            Color.DarkOrange,
+            Color.Chartreuse,
+            Color.Crimson,
+            Color.Gold,
+            Color.YellowGreen,
+            Color.Purple,
+            Color.DeepPink,
+            Color.MediumSpringGreen,
+            Color.BlueViolet,
+        };
+        int iterateCount = 0;
 
         int centroids;
         public Form1()
@@ -26,12 +43,13 @@ namespace KMeans
         {
             panel1.Enabled = false;
             button_Set.Enabled = false;
+            button_Itterate.Enabled = false;
         }
 
         private void DrawPoints(int x,int y) {
             Brush aBrush = (Brush)Brushes.Black;
             Graphics g = panel1.CreateGraphics();
-            g.FillEllipse(aBrush, x, y, 10, 10);
+            g.FillEllipse(aBrush, x - 5, y - 5, 10, 10);
             
         }
 
@@ -39,7 +57,45 @@ namespace KMeans
         {
             Brush aBrush = (Brush)Brushes.Red;
             Graphics g = panel1.CreateGraphics();
-            g.FillEllipse(aBrush, x, y, 10, 10);
+            g.FillEllipse(aBrush, x-5, y - 5, 10, 10);
+        }
+
+        private void displayLines(int x1, int y1, int x2, int y2, Pen aPen)
+        {
+            Graphics g = panel1.CreateGraphics();
+            g.DrawLine(aPen, x1, y1, x2, y2);
+        }
+
+        
+        private void DrawGroups()
+        {
+            var random = new Random();
+            for(int i=0;i<centroidList.Count;i++)
+            {
+                Color color = colors[random.Next(colors.Count)];
+                for (int j = 0; j < dataPoints.Count; j++)
+                {
+                    if(clusters[j] == i)
+                        displayLines(dataPoints[j][0], dataPoints[j][1], centroidList[i][0], centroidList[i][1], new Pen(color, 2));
+                }
+            }
+            
+        }
+
+        private void ClearGroups()
+        {
+            for (int i = 0; i < dataPoints.Count; i++)
+            {
+                try
+                {
+                    displayLines(dataPoints[i][0], dataPoints[i][1], centroidList[clusters[i]][0], centroidList[clusters[i]][1], new Pen(Color.White, 2));
+
+                }
+                catch
+                {
+
+                }
+            }
         }
 
         private void DisplayInitialPoints()
@@ -52,7 +108,7 @@ namespace KMeans
 
                 if (!validate(x, y))
                 {
-                    MessageBox.Show("Points exceeds the limits of the panel!", "Panel is not enough!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Range of Points exceeds the boundry of the panel!", "Panel is not enough!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
@@ -72,6 +128,7 @@ namespace KMeans
             ClearPanel();
             Clustering();            
             UpdateCluster();
+            DrawGroups();
 
             foreach (int[] data in dataPoints)
             {
@@ -91,7 +148,7 @@ namespace KMeans
             }
             if (isFinished(oldCentroids, centroidList))
             {
-                MessageBox.Show("No Itterations needed!", "No Itterations needed!",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                MessageBox.Show("No Itteration is needed!", "No Itteration is needed!",MessageBoxButtons.OK,MessageBoxIcon.Information);
                 return;
             }
             
@@ -165,7 +222,8 @@ namespace KMeans
             int count = 0;
             if (num >= dataPoints.Count)
             {
-                MessageBox.Show("Number of centroids exceeds the number of points!","Out of panel range",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("Number of centroids is greater than or equal to the number of data points!", "Less datapoints!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Reset();
                 return;
             }
             foreach (int[] data in dataPoints)
@@ -188,6 +246,10 @@ namespace KMeans
             button_Load.Enabled = true;
             button_Manual.Enabled = true;
             panel1.Enabled = false;
+            button_Load.Enabled = true;
+            button_Itterate.Enabled = false;
+            textBox_Centroids.Enabled = true;
+            textBox_Centroids.Text = "";
             panel1.Invalidate();
             dataPoints = new List<int[]>();
             centroidList = new List<int[]>();
@@ -197,10 +259,10 @@ namespace KMeans
 
         private void button_Load_Click(object sender, EventArgs e)
         {
-            Reset();
+            
             if(!(int.TryParse(textBox_Centroids.Text,out centroids)))
             {
-                MessageBox.Show("No Centroids Detected!","No Centroids",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("No Centroids are Detected!", "No Centroids are Detected", MessageBoxButtons.OK,MessageBoxIcon.Error);
                 return;
             }
 
@@ -245,9 +307,12 @@ namespace KMeans
 
                 file.Close();
                 pictureBox2.Visible = false;
+                button_Load.Enabled = false;
+                textBox_Centroids.Enabled = false;
                 DisplayInitialPoints();
                 button_Manual.Enabled = false;
-
+                button_Itterate.Enabled = true;
+     
 
 
             }
@@ -267,7 +332,7 @@ namespace KMeans
             {
                 int x = centroid[0];
                 int y = centroid[1];
-                g.FillEllipse(aBrush, x, y, 10, 10);
+                g.FillEllipse(aBrush, x - 5, y - 5, 10, 10);
                 
             }
 
@@ -275,7 +340,7 @@ namespace KMeans
             {
                 int x = data[0];
                 int y = data[1];
-                g.FillEllipse(aBrush, x, y, 10, 10);
+                g.FillEllipse(aBrush, x - 5, y - 5, 10, 10);
             }
 
         }
@@ -287,7 +352,17 @@ namespace KMeans
                 MessageBox.Show("Please insert points!", "No Points!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+            if(dataPoints.Count<= int.Parse(textBox_Centroids.Text))
+            {
+                MessageBox.Show("Number of centroids is greater than or equal to the number of data points!", "Less datapoints!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Reset();
+                return;
+            }
+            if (iterateCount > 0)
+                ClearGroups();
             Itterate();
+            iterateCount++;
+
         }
 
         private bool validate(int x,int y)
@@ -339,23 +414,34 @@ namespace KMeans
 
         private void button_Set_Click(object sender, EventArgs e)
         {
+            if (dataPoints.Count == 0)
+            {
+                MessageBox.Show("No Datapoint is Detected!", "No Datapoints", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Reset();
+                return;
+            }
             if (!(int.TryParse(textBox_Centroids.Text, out centroids)))
             {
-                MessageBox.Show("No Centroids Detected!", "No Centroids", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No Centroids are Detected!", "No Centroids", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Reset();
                 return;
             }
             panel1.Enabled = false;
             button_Load.Enabled = false;
             button_Manual.Enabled = false;
             button_Set.Enabled = false;
+            button_Itterate.Enabled = true;
+            textBox_Centroids.Enabled = false;
             DisplayInitialPoints();
+            
         }
 
         private void button_Manual_Click(object sender, EventArgs e)
         {
             if (!(int.TryParse(textBox_Centroids.Text, out centroids)))
             {
-                MessageBox.Show("No Centroids Detected!", "No Centroids", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No Centroids are Detected!", "No Centroids", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Reset();
                 return;
             }
             button_Load.Enabled = false;

@@ -99,9 +99,9 @@
             // 
             // textBox_Centroids
             // 
-            this.textBox_Centroids.Location = new System.Drawing.Point(932, 14);
+            this.textBox_Centroids.Location = new System.Drawing.Point(914, 14);
             this.textBox_Centroids.Name = "textBox_Centroids";
-            this.textBox_Centroids.Size = new System.Drawing.Size(40, 20);
+            this.textBox_Centroids.Size = new System.Drawing.Size(58, 20);
             this.textBox_Centroids.TabIndex = 4;
             // 
             // label1
@@ -112,9 +112,9 @@
             this.label1.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.label1.Location = new System.Drawing.Point(818, 14);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(108, 20);
+            this.label1.Size = new System.Drawing.Size(90, 20);
             this.label1.TabIndex = 5;
-            this.label1.Text = "# of Centroids";
+            this.label1.Text = "# Centroids";
             // 
             // button_Manual
             // 
