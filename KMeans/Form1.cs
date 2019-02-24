@@ -16,6 +16,7 @@ namespace KMeans
         List<int[]> centroidList = new List<int[]>();
         List<int> clusters = new List<int>();
         List<Color> colors = new List<Color>()
+
         {
             Color.Blue,
             Color.Cyan,
@@ -32,6 +33,8 @@ namespace KMeans
             Color.BlueViolet,
         };
         int iterateCount = 0;
+        bool PanelEnabled = true;
+        bool CoordinateVisible = true;
 
         int centroids;
         public Form1()
@@ -41,7 +44,8 @@ namespace KMeans
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            panel1.Enabled = false;
+            PanelEnabled = false;
+            CoordinateVisible = false;
             button_Set.Enabled = false;
             button_Itterate.Enabled = false;
         }
@@ -244,8 +248,8 @@ namespace KMeans
         private void Reset()
         {
             button_Load.Enabled = true;
-            button_Manual.Enabled = true;
-            panel1.Enabled = false;
+            button_Manual.Enabled = true;            
+            PanelEnabled = false;
             button_Load.Enabled = true;
             button_Itterate.Enabled = false;
             textBox_Centroids.Enabled = true;
@@ -255,6 +259,9 @@ namespace KMeans
             centroidList = new List<int[]>();
             clusters = new List<int>();
             pictureBox2.Visible = Enabled;
+            label_X.Text = "";
+            label_Y.Text = "";
+            CoordinateVisible = false;
         }
 
         private void button_Load_Click(object sender, EventArgs e)
@@ -312,6 +319,8 @@ namespace KMeans
                 DisplayInitialPoints();
                 button_Manual.Enabled = false;
                 button_Itterate.Enabled = true;
+                PanelEnabled = false;
+                CoordinateVisible = true;
      
 
 
@@ -362,6 +371,7 @@ namespace KMeans
                 ClearGroups();
             Itterate();
             iterateCount++;
+            PanelEnabled = false;
 
         }
 
@@ -405,6 +415,10 @@ namespace KMeans
 
         private void panel1_MouseUp(object sender, MouseEventArgs e)
         {
+            if (PanelEnabled == false)
+            {
+                return;
+            }
             int x = e.X;
             int y = e.Y;
             int[] point = { x, y };
@@ -426,7 +440,8 @@ namespace KMeans
                 Reset();
                 return;
             }
-            panel1.Enabled = false;
+            //panel1.Enabled = false;
+            PanelEnabled = false;
             button_Load.Enabled = false;
             button_Manual.Enabled = false;
             button_Set.Enabled = false;
@@ -445,12 +460,24 @@ namespace KMeans
                 return;
             }
             button_Load.Enabled = false;
-            panel1.Enabled = true;
+            PanelEnabled = true;
             button_Set.Enabled = true;
             button_Manual.Enabled = false;
             pictureBox2.Visible = false;
+            CoordinateVisible = true;
 
 
+        }
+
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!CoordinateVisible)
+            {
+                return;
+            }
+            Point p = panel1.PointToClient(Cursor.Position);
+            label_X.Text = p.X.ToString();
+            label_Y.Text = (panel1.Height - p.Y).ToString();
         }
     }
 }
